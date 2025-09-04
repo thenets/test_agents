@@ -3,9 +3,9 @@ from langchain.schema import SystemMessage, HumanMessage
 
 class AgentBasedController:
     def __init__(self):
-        # Controller agent uses fast Gemma3:1b for routing decisions
+        # Controller agent uses Mistral for routing decisions
         self.controller_llm = ChatOpenAI(
-            model="gemma3:1b", 
+            model="mistral", 
             api_key="ollama", 
             base_url="http://localhost:11434/v1"
         )
@@ -135,28 +135,72 @@ Your personality traits:
         """
         Use the controller agent to intelligently select the best specialist
         """
-        # Build agent descriptions for the controller
+        import random
+        
+        # Build enhanced agent descriptions for the controller
+        agent_info_enhanced = {
+            "dr_code": {
+                "name": "Dr. Code",
+                "model": self.specialist_agents["dr_code"]["model_name"],
+                "description": "Programming expert and technical mentor who explains code concepts clearly",
+                "best_for": "Technical programming questions, debugging help, algorithm explanations, code reviews",
+                "specialties": self.specialist_agents["dr_code"]["specialties"]
+            },
+            "creative_writer": {
+                "name": "Creative Writer", 
+                "model": self.specialist_agents["creative_writer"]["model_name"],
+                "description": "Imaginative storyteller who crafts engaging narratives and artistic content",
+                "best_for": "Stories, poetry, creative writing, fiction, artistic expression",
+                "specialties": self.specialist_agents["creative_writer"]["specialties"]
+            },
+            "business_analyst": {
+                "name": "Business Analyst",
+                "model": self.specialist_agents["business_analyst"]["model_name"], 
+                "description": "Professional strategist who provides data-driven business insights and recommendations",
+                "best_for": "Business strategy, market analysis, financial planning, professional consulting",
+                "specialties": self.specialist_agents["business_analyst"]["specialties"]
+            },
+            "witty_comedian": {
+                "name": "Witty Comedian",
+                "model": self.specialist_agents["witty_comedian"]["model_name"],
+                "description": "Entertaining humorist who makes topics fun and engaging with clever jokes",
+                "best_for": "Jokes, humor, entertaining explanations, light-hearted content", 
+                "specialties": self.specialist_agents["witty_comedian"]["specialties"]
+            }
+        }
+        
+        # Randomize agent order to prevent selection bias
+        agent_keys = list(agent_info_enhanced.keys())
+        random.shuffle(agent_keys)
+        
         agent_descriptions = []
-        for agent_key, agent_info in self.specialist_agents.items():
-            specialties_text = "\n".join([f"  - {specialty}" for specialty in agent_info["specialties"]])
-            agent_descriptions.append(f"""**{agent_info['name']}** ({agent_info['model_name']}):
-{specialties_text}""")
+        for agent_key in agent_keys:
+            info = agent_info_enhanced[agent_key]
+            agent_descriptions.append(f"""**{info['name']}** ({info['model']}):
+{info['description']}
+Best for: {info['best_for']}""")
         
         agents_text = "\n\n".join(agent_descriptions)
         
-        controller_prompt = f"""You must select the best agent to handle this query.
+        controller_prompt = f"""You are an intelligent routing system. Your job is to analyze the query and match it to the specialist agent who can provide the best response.
 
-QUERY: {query}
+QUERY TO ROUTE: {query}
 
-AVAILABLE AGENTS:
+AVAILABLE SPECIALIST AGENTS:
 {agents_text}
 
-Analyze the query and select the most appropriate agent. Respond in this exact format:
+Instructions:
+- Consider the query's main intent and requirements
+- Match the query type to each agent's core strengths  
+- Each agent has distinct specialties - choose the best match
+- Be decisive in your selection
+
+Respond in this exact format:
 
 SELECTED_AGENT: [agent_name]
-REASONING: [1-2 sentences explaining why this agent is the best choice]
+REASONING: [1-2 sentences explaining why this agent is the best match for this specific query]
 
-Agent names to choose from: Dr. Code, Creative Writer, Business Analyst, Witty Comedian"""
+Available agent names: Dr. Code, Creative Writer, Business Analyst, Witty Comedian"""
 
         messages = [
             SystemMessage(content=self.controller_persona),
