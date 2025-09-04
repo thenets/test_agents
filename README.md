@@ -1,0 +1,99 @@
+# AI Agent Examples
+
+A collection of standalone examples demonstrating different types of AI agents using LangChain, LangGraph, and local Ollama models.
+
+## Prerequisites
+
+1. **Ollama**: Install and run Ollama locally
+   ```bash
+   # Install Ollama (see https://ollama.ai)
+   # Pull the required model
+   ollama pull gpt-oss:20b
+   ```
+
+2. **Python Dependencies**: Install required packages
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Project Structure
+
+```
+├── examples/basic/          # Basic agent examples
+│   ├── 01_simple_react_agent/    # Basic ReAct agent with no tools
+│   └── 02_search_agent/          # ReAct agent with web search
+├── shared/                  # Common utilities and configurations
+└── docs/                    # Additional documentation
+```
+
+## Examples
+
+### Basic Examples
+
+1. **[Simple ReAct Agent](examples/basic/01_simple_react_agent/)**
+   - Basic ReAct pattern implementation
+   - No external tools
+   - Demonstrates core agent reasoning
+
+2. **[Search-Enabled Agent](examples/basic/02_search_agent/)**
+   - ReAct agent with DuckDuckGo search
+   - Real-time information retrieval
+   - Tool integration example
+
+## Running Examples
+
+Each example is self-contained and can be run independently:
+
+```bash
+# Run simple ReAct agent
+cd examples/basic/01_simple_react_agent
+python main.py
+
+# Run search-enabled agent
+cd examples/basic/02_search_agent
+python main.py
+```
+
+## Configuration
+
+### LLM Setup
+All examples use local Ollama by default. The shared configuration is in `shared/llm_config.py`:
+
+- **Model**: gpt-oss:20b
+- **API**: Local Ollama at http://localhost:11434/v1
+- **API Key**: "ollama" (placeholder for Ollama)
+
+### Customizing Models
+You can modify the LLM configuration in each example or use the shared utilities:
+
+```python
+from shared.llm_config import get_llm
+
+# Use custom model
+llm = get_llm(model="your-model-name")
+```
+
+## Adding New Examples
+
+1. Create a new directory under `examples/basic/` (or appropriate category)
+2. Add `main.py` with your agent implementation
+3. Include a `README.md` explaining the example
+4. Update this main README with the new example
+
+## Dependencies
+
+Core dependencies used across examples:
+- `langchain`: Core LangChain framework
+- `langchain-community`: Community tools and integrations
+- `langchain-openai`: OpenAI-compatible LLM interface
+- `langgraph`: Graph-based agent framework
+
+See `requirements.txt` for the complete list.
+
+## Contributing
+
+When adding new examples:
+- Follow the existing directory structure
+- Include comprehensive README files
+- Use the shared utilities where possible
+- Test with the default Ollama setup
