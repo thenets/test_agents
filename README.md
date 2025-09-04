@@ -10,6 +10,7 @@ A collection of standalone examples demonstrating different types of AI agents u
    # Pull the required models
    ollama pull gpt-oss:20b
    ollama pull mistral
+   ollama pull gemma3:1b
    ```
 
 2. **Python Dependencies**: Install required packages
@@ -26,7 +27,8 @@ A collection of standalone examples demonstrating different types of AI agents u
 │   ├── 03_controller_agent/      # Controller agent with dual LLM routing
 │   ├── 04_persona_agent/         # Agent with Dr. Code teaching persona
 │   ├── 05_multi_persona_controller/  # Advanced controller with 4 persona+LLM combinations
-│   └── 06_multi_agent_critique/  # Multi-agent system with solver and judge collaboration
+│   ├── 06_multi_agent_critique/  # Multi-agent system with solver and judge collaboration
+│   └── 07_agent_controller/      # AI-powered agent selection with reasoning
 ├── shared/                  # Common utilities and configurations
 └── docs/                    # Additional documentation
 ```
@@ -65,6 +67,11 @@ A collection of standalone examples demonstrating different types of AI agents u
    - Iterative improvement through critique and feedback loops
    - Quality control with automated response evaluation and refinement
 
+7. **[Agent-Based Controller](examples/basic/07_agent_controller/)**
+   - AI-powered routing with Gemma3:1b controller agent
+   - Intelligent agent selection based on reasoning rather than keywords
+   - Mixed model strategy for optimal speed/quality balance
+
 ## Running Examples
 
 Each example is self-contained and can be run independently:
@@ -93,6 +100,10 @@ python main.py
 # Run multi-agent critique system
 cd examples/basic/06_multi_agent_critique
 python main.py
+
+# Run agent-based controller
+cd examples/basic/07_agent_controller
+python main.py
 ```
 
 ## Configuration
@@ -100,7 +111,7 @@ python main.py
 ### LLM Setup
 All examples use local Ollama by default:
 
-- **Models**: gpt-oss:20b, mistral (controller agent uses both)
+- **Models**: gpt-oss:20b, mistral, gemma3:1b (examples use different combinations)
 - **API**: Local Ollama at http://localhost:11434/v1
 - **API Key**: "ollama" (placeholder for Ollama)
 
