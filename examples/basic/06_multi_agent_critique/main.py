@@ -110,10 +110,11 @@ FEEDBACK: [If FAIL, provide specific actionable feedback for improvement. If PAS
         try:
             lines = evaluation.split('\n')
             for line in lines:
-                if line.startswith('DECISION:'):
-                    decision = line.split(':', 1)[1].strip().upper()
-                elif line.startswith('FEEDBACK:'):
-                    feedback = line.split(':', 1)[1].strip()
+                line_stripped = line.strip()  # Remove leading/trailing whitespace
+                if line_stripped.startswith('DECISION:'):
+                    decision = line_stripped.split(':', 1)[1].strip().upper()
+                elif line_stripped.startswith('FEEDBACK:'):
+                    feedback = line_stripped.split(':', 1)[1].strip()
                     if feedback.lower() in ["none needed.", "none needed"]:
                         feedback = None
         except:
@@ -122,6 +123,11 @@ FEEDBACK: [If FAIL, provide specific actionable feedback for improvement. If PAS
                 decision = "PASS"
             feedback = evaluation if decision == "FAIL" else None
         
+        # Ensure feedback is None for PASS decisions
+        if decision == "PASS":
+            feedback = None
+        
+        print(f"DEBUG: Parsed decision='{decision}', feedback='{feedback}'")
         return decision, feedback
 
     def process_query(self, query, max_attempts=3):
