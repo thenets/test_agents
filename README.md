@@ -74,16 +74,6 @@ All examples use local Ollama by default:
 - **API**: Local Ollama at http://localhost:11434/v1
 - **API Key**: "ollama" (placeholder for Ollama)
 
-### Customizing Models
-You can modify the LLM configuration in each example or use the shared utilities:
-
-```python
-from shared.llm_config import get_llm
-
-# Use custom model
-llm = get_llm(model="your-model-name")
-```
-
 ## Adding New Examples
 
 1. Create a new directory under `examples/basic/` (or appropriate category)
