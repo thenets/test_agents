@@ -7,8 +7,9 @@ A collection of standalone examples demonstrating different types of AI agents u
 1. **Ollama**: Install and run Ollama locally
    ```bash
    # Install Ollama (see https://ollama.ai)
-   # Pull the required model
+   # Pull the required models
    ollama pull gpt-oss:20b
+   ollama pull mistral
    ```
 
 2. **Python Dependencies**: Install required packages
@@ -21,7 +22,8 @@ A collection of standalone examples demonstrating different types of AI agents u
 ```
 ├── examples/basic/          # Basic agent examples
 │   ├── 01_simple_react_agent/    # Basic ReAct agent with no tools
-│   └── 02_search_agent/          # ReAct agent with web search
+│   ├── 02_search_agent/          # ReAct agent with web search
+│   └── 03_controller_agent/      # Controller agent with dual LLM routing
 ├── shared/                  # Common utilities and configurations
 └── docs/                    # Additional documentation
 ```
@@ -40,6 +42,11 @@ A collection of standalone examples demonstrating different types of AI agents u
    - Real-time information retrieval
    - Tool integration example
 
+3. **[Controller Agent](examples/basic/03_controller_agent/)**
+   - Intelligent routing between multiple LLMs
+   - Keyword-based model selection (GPT-OSS:20b vs Mistral)
+   - Demonstrates multi-model orchestration
+
 ## Running Examples
 
 Each example is self-contained and can be run independently:
@@ -52,14 +59,18 @@ python main.py
 # Run search-enabled agent
 cd examples/basic/02_search_agent
 python main.py
+
+# Run controller agent
+cd examples/basic/03_controller_agent
+python main.py
 ```
 
 ## Configuration
 
 ### LLM Setup
-All examples use local Ollama by default. The shared configuration is in `shared/llm_config.py`:
+All examples use local Ollama by default:
 
-- **Model**: gpt-oss:20b
+- **Models**: gpt-oss:20b, mistral (controller agent uses both)
 - **API**: Local Ollama at http://localhost:11434/v1
 - **API Key**: "ollama" (placeholder for Ollama)
 
