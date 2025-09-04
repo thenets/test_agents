@@ -25,7 +25,8 @@ A collection of standalone examples demonstrating different types of AI agents u
 │   ├── 02_search_agent/          # ReAct agent with web search
 │   ├── 03_controller_agent/      # Controller agent with dual LLM routing
 │   ├── 04_persona_agent/         # Agent with Dr. Code teaching persona
-│   └── 05_multi_persona_controller/  # Advanced controller with 4 persona+LLM combinations
+│   ├── 05_multi_persona_controller/  # Advanced controller with 4 persona+LLM combinations
+│   └── 06_multi_agent_critique/  # Multi-agent system with solver and judge collaboration
 ├── shared/                  # Common utilities and configurations
 └── docs/                    # Additional documentation
 ```
@@ -59,6 +60,11 @@ A collection of standalone examples demonstrating different types of AI agents u
    - Dr. Code (GPT-OSS), Creative Writer (Mistral), Business Analyst (GPT-OSS), Witty Comedian (Mistral)
    - Intelligent routing based on query content and optimal model selection
 
+6. **[Multi-Agent Critique System](examples/basic/06_multi_agent_critique/)**
+   - Collaborative solver and judge agents working together
+   - Iterative improvement through critique and feedback loops
+   - Quality control with automated response evaluation and refinement
+
 ## Running Examples
 
 Each example is self-contained and can be run independently:
@@ -82,6 +88,10 @@ python main.py
 
 # Run multi-persona controller
 cd examples/basic/05_multi_persona_controller
+python main.py
+
+# Run multi-agent critique system
+cd examples/basic/06_multi_agent_critique
 python main.py
 ```
 
@@ -116,5 +126,4 @@ See `requirements.txt` for the complete list.
 When adding new examples:
 - Follow the existing directory structure
 - Include comprehensive README files
-- Use the shared utilities where possible
 - Test with the default Ollama setup
