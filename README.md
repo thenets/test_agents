@@ -23,7 +23,8 @@ A collection of standalone examples demonstrating different types of AI agents u
 ├── examples/basic/          # Basic agent examples
 │   ├── 01_simple_react_agent/    # Basic ReAct agent with no tools
 │   ├── 02_search_agent/          # ReAct agent with web search
-│   └── 03_controller_agent/      # Controller agent with dual LLM routing
+│   ├── 03_controller_agent/      # Controller agent with dual LLM routing
+│   └── 04_persona_agent/         # Agent with Dr. Code teaching persona
 ├── shared/                  # Common utilities and configurations
 └── docs/                    # Additional documentation
 ```
@@ -47,6 +48,11 @@ A collection of standalone examples demonstrating different types of AI agents u
    - Keyword-based model selection (GPT-OSS:20b vs Mistral)
    - Demonstrates multi-model orchestration
 
+4. **[Persona Agent](examples/basic/04_persona_agent/)**
+   - Agent with "Dr. Code" teaching persona
+   - System prompting for personality and response style
+   - Side-by-side comparison of responses with/without persona
+
 ## Running Examples
 
 Each example is self-contained and can be run independently:
@@ -62,6 +68,10 @@ python main.py
 
 # Run controller agent
 cd examples/basic/03_controller_agent
+python main.py
+
+# Run persona agent
+cd examples/basic/04_persona_agent
 python main.py
 ```
 
