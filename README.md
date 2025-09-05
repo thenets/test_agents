@@ -28,9 +28,8 @@ A collection of standalone examples demonstrating different types of AI agents u
 │   ├── 04_persona_agent/         # Agent with Dr. Code teaching persona
 │   ├── 05_multi_persona_controller/  # Advanced controller with 4 persona+LLM combinations
 │   ├── 06_multi_agent_critique/  # Multi-agent system with solver and judge collaboration
-│   └── 07_agent_controller/      # AI-powered agent selection with reasoning
-├── shared/                  # Common utilities and configurations
-└── docs/                    # Additional documentation
+│   ├── 07_agent_controller/      # AI-powered agent selection with reasoning
+│   └── 08_mcp_agent/             # Simulated MCP tool integration
 ```
 
 ## Examples
@@ -68,9 +67,15 @@ A collection of standalone examples demonstrating different types of AI agents u
    - Quality control with automated response evaluation and refinement
 
 7. **[Agent-Based Controller](examples/basic/07_agent_controller/)**
-   - AI-powered routing with Gemma3:1b controller agent
+   - AI-powered routing with Mistral controller agent
    - Intelligent agent selection based on reasoning rather than keywords
    - Mixed model strategy for optimal speed/quality balance
+
+8. **[Simulated MCP Agent](examples/basic/08_mcp_agent/)**
+   - Agent with simulated Model Context Protocol (MCP) tool integration
+   - Calculator, web search simulation, and file operations
+   - Educational example of MCP-style tool integration patterns
+   - Demonstrates LangChain bridge pattern for external tool protocols
 
 ## Running Examples
 
@@ -103,6 +108,10 @@ python main.py
 
 # Run agent-based controller
 cd examples/basic/07_agent_controller
+python main.py
+
+# Run simulated MCP agent
+cd examples/basic/08_mcp_agent
 python main.py
 ```
 
