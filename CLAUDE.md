@@ -20,6 +20,7 @@ This is a collection of standalone AI agent examples using LangChain, LangGraph,
     - **08_mcp_agent/**: Simulated MCP tool integration
   - **langgraph/**: LangGraph-focused examples with multiple LLM providers
     - **01_structured_output_openrouter/**: Structured output with OpenRouter integration
+    - **02_tool_integration_calculator/**: ReAct agent with calculator tools
 - **agent-testarea/**: Python virtual environment directory (not source code)
 - **requirements.txt**: Python dependencies for all examples
 

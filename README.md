@@ -31,7 +31,8 @@ A collection of standalone examples demonstrating different types of AI agents u
 │   ├── 07_agent_controller/      # AI-powered agent selection with reasoning
 │   └── 08_mcp_agent/             # Simulated MCP tool integration
 ├── examples/langgraph/      # LangGraph-focused examples
-│   └── 01_structured_output_openrouter/  # Structured output with OpenRouter integration
+│   ├── 01_structured_output_openrouter/  # Structured output with OpenRouter integration
+│   └── 02_tool_integration_calculator/   # ReAct agent with calculator tools
 ```
 
 ## Examples
@@ -87,6 +88,12 @@ A collection of standalone examples demonstrating different types of AI agents u
    - OpenRouter integration for multi-provider LLM access
    - Demonstrates weather queries, task analysis, and biographical information extraction
 
+10. **[Tool Integration with Calculator](examples/langgraph/02_tool_integration_calculator/)**
+    - LangGraph ReAct agent with custom tool integration
+    - Calculator tools using @tool decorator (add, subtract, multiply, divide)
+    - Automatic tool selection and execution flow visualization
+    - Demonstrates basic mathematical operations and error handling
+
 ## Running Examples
 
 Each example is self-contained and can be run independently:
@@ -126,6 +133,10 @@ python main.py
 
 # Run structured output with OpenRouter
 cd examples/langgraph/01_structured_output_openrouter
+python main.py
+
+# Run calculator tool integration
+cd examples/langgraph/02_tool_integration_calculator
 python main.py
 ```
 
