@@ -21,6 +21,7 @@ This is a collection of standalone AI agent examples using LangChain, LangGraph,
   - **langgraph/**: LangGraph-focused examples with multiple LLM providers
     - **01_structured_output_openrouter/**: Structured output with OpenRouter integration
     - **02_tool_integration_calculator/**: ReAct agent with calculator tools
+    - **03_simple_agent_loop/**: Basic agent loop pattern with plan-act-observe cycle
 - **agent-testarea/**: Python virtual environment directory (not source code)
 - **requirements.txt**: Python dependencies for all examples
 

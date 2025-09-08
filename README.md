@@ -32,7 +32,8 @@ A collection of standalone examples demonstrating different types of AI agents u
 │   └── 08_mcp_agent/             # Simulated MCP tool integration
 ├── examples/langgraph/      # LangGraph-focused examples
 │   ├── 01_structured_output_openrouter/  # Structured output with OpenRouter integration
-│   └── 02_tool_integration_calculator/   # ReAct agent with calculator tools
+│   ├── 02_tool_integration_calculator/   # ReAct agent with calculator tools
+│   └── 03_simple_agent_loop/             # Basic agent loop pattern with plan-act-observe cycle
 ```
 
 ## Examples
@@ -94,6 +95,12 @@ A collection of standalone examples demonstrating different types of AI agents u
     - Automatic tool selection and execution flow visualization
     - Demonstrates basic mathematical operations and error handling
 
+11. **[Simple Agent Loop](examples/langgraph/03_simple_agent_loop/)**
+    - Fundamental agent pattern: plan → act → observe → repeat
+    - Natural exit strategy when no more tool calls needed
+    - Multi-step reasoning and state accumulation through iterations
+    - Clear demonstration of core agent loop mechanics
+
 ## Running Examples
 
 Each example is self-contained and can be run independently:
@@ -137,6 +144,10 @@ python main.py
 
 # Run calculator tool integration
 cd examples/langgraph/02_tool_integration_calculator
+python main.py
+
+# Run simple agent loop
+cd examples/langgraph/03_simple_agent_loop
 python main.py
 ```
 
