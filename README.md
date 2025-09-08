@@ -1,6 +1,6 @@
 # AI Agent Examples
 
-A collection of standalone examples demonstrating different types of AI agents using LangChain, LangGraph, and local Ollama models.
+A collection of standalone examples demonstrating different types of AI agents using LangChain, LangGraph, and various LLM providers including local Ollama and OpenRouter.
 
 ## Prerequisites
 
@@ -30,6 +30,8 @@ A collection of standalone examples demonstrating different types of AI agents u
 │   ├── 06_multi_agent_critique/  # Multi-agent system with solver and judge collaboration
 │   ├── 07_agent_controller/      # AI-powered agent selection with reasoning
 │   └── 08_mcp_agent/             # Simulated MCP tool integration
+├── examples/langgraph/      # LangGraph-focused examples
+│   └── 01_structured_output_openrouter/  # Structured output with OpenRouter integration
 ```
 
 ## Examples
@@ -77,6 +79,14 @@ A collection of standalone examples demonstrating different types of AI agents u
    - Educational example of MCP-style tool integration patterns
    - Demonstrates LangChain bridge pattern for external tool protocols
 
+### LangGraph Examples
+
+9. **[Structured Output with OpenRouter](examples/langgraph/01_structured_output_openrouter/)**
+   - LangGraph StateGraph with conditional routing between specialized agents
+   - Structured output using Pydantic models (WeatherResponse, TaskAnalysisResponse, PersonResponse)
+   - OpenRouter integration for multi-provider LLM access
+   - Demonstrates weather queries, task analysis, and biographical information extraction
+
 ## Running Examples
 
 Each example is self-contained and can be run independently:
@@ -113,16 +123,25 @@ python main.py
 # Run simulated MCP agent
 cd examples/basic/08_mcp_agent
 python main.py
+
+# Run structured output with OpenRouter
+cd examples/langgraph/01_structured_output_openrouter
+python main.py
 ```
 
 ## Configuration
 
 ### LLM Setup
-All examples use local Ollama by default:
 
+**Basic Examples** use local Ollama by default:
 - **Models**: gpt-oss:20b, mistral, gemma3:1b (examples use different combinations)
 - **API**: Local Ollama at http://localhost:11434/v1
 - **API Key**: "ollama" (placeholder for Ollama)
+
+**LangGraph Examples** support multiple providers:
+- **OpenRouter**: Access to 200+ models from various providers (requires API key)
+- **Local Ollama**: Compatible with local models for development
+- Configuration via environment variables in each example
 
 ## Adding New Examples
 
@@ -138,6 +157,8 @@ Core dependencies used across examples:
 - `langchain-community`: Community tools and integrations
 - `langchain-openai`: OpenAI-compatible LLM interface
 - `langgraph`: Graph-based agent framework
+- `pydantic`: Data validation and structured output models
+- `python-dotenv`: Environment variable management
 
 See `requirements.txt` for the complete list.
 
