@@ -5,3 +5,5 @@ langgraph
 duckduckgo-search
 ddgs
 mcp[cli]
+python-dotenv
+pydantic
