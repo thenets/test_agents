@@ -4,18 +4,30 @@ A collection of standalone examples demonstrating different types of AI agents u
 
 ## Prerequisites
 
-1. **Ollama**: Install and run Ollama locally
+1. **Python Virtual Environment**: Create and activate a virtual environment
+   ```bash
+   # Create virtual environment
+   python -m venv agent-testarea
+   
+   # Activate virtual environment
+   # On Linux/Mac:
+   source agent-testarea/bin/activate
+   # On Windows:
+   # agent-testarea\Scripts\activate
+   ```
+
+2. **Python Dependencies**: Install required packages
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Ollama**: Install and run Ollama locally
    ```bash
    # Install Ollama (see https://ollama.ai)
    # Pull the required models
    ollama pull gpt-oss:20b
    ollama pull mistral
    ollama pull gemma3:1b
-   ```
-
-2. **Python Dependencies**: Install required packages
-   ```bash
-   pip install -r requirements.txt
    ```
 
 ## Project Structure
