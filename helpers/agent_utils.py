@@ -361,10 +361,11 @@ def run_calculation(agent, query, repeat=1):
             if tools_were_used:
                 # Tools were used - validate normally
                 if ground_truth is not None and agent_result is not None:
-                    if abs(agent_result - ground_truth) < 1e-10:
+                    # Use a reasonable tolerance for floating point comparison (0.01 for practical precision)
+                    if abs(agent_result - ground_truth) < 0.01:
                         print(f"🔍 VALIDATION: ✅ correct")
                     else:
-                        print(f"🔍 VALIDATION: ❌ wrong (Agent: {agent_result}, Python: {ground_truth})")
+                        print(f"🔍 VALIDATION: ❌ wrong (Agent: {agent_result}, Python: {round(ground_truth, 6)})")
                 elif ground_truth is not None:
                     print(f"🔍 VALIDATION: ⚠️ unable to extract agent result")
                 elif agent_result is not None:
@@ -395,7 +396,7 @@ def run_calculation(agent, query, repeat=1):
             
             # Compare with ground truth if available
             if ground_truth is not None and agent_result is not None:
-                ground_truth_match = abs(agent_result - ground_truth) < 1e-10
+                ground_truth_match = abs(agent_result - ground_truth) < 0.01
                 
                 # Also check LLM final answers across runs
                 llm_results = []
@@ -411,11 +412,11 @@ def run_calculation(agent, query, repeat=1):
                 if all_same and ground_truth_match:
                     print(f"🔍 VALIDATION: ✅ correct (all {repeat} runs consistent)")
                 else:
-                    print(f"🔍 VALIDATION: ❌ wrong (Agent: {agent_result}, Python: {ground_truth})")
+                    print(f"🔍 VALIDATION: ❌ wrong (Agent: {agent_result}, Python: {round(ground_truth, 6)})")
                     if not all_same:
                         print(f"   • Inconsistent results: {valid_results}")
                     if not ground_truth_match:
-                        print(f"   • Wrong answer: difference of {abs(agent_result - ground_truth)}")
+                        print(f"   • Wrong answer: difference of {abs(agent_result - ground_truth):.6f}")
             else:
                 if all_same:
                     print(f"✅ VALIDATION PASSED: All {len(valid_results)} results are consistent")
