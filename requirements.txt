@@ -7,3 +7,6 @@ ddgs
 mcp[cli]
 python-dotenv
 pydantic
+jupyter
+ipykernel
+notebook
