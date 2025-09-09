@@ -1,5 +1,7 @@
 import time
 import re
+import ast
+import operator
 from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
 from langgraph.prebuilt import create_react_agent
 from .llm_config import configure_llm
@@ -50,6 +52,108 @@ def extract_numerical_result(final_answer):
                 continue
     
     return None
+
+def extract_expression_with_llm(query):
+    """Extract mathematical expression from query using LLM.
+    
+    Args:
+        query: The user's calculation query
+        
+    Returns:
+        str or None: The extracted mathematical expression, or None if not found
+    """
+    try:
+        llm = configure_llm()
+        
+        extraction_prompt = f"""Extract the mathematical expression from this query and return ONLY the mathematical expression that can be evaluated with Python's eval() function.
+
+Query: "{query}"
+
+Rules:
+- Return only the mathematical expression (e.g., "15 + 25", "(15 + 25) * 3", "1024 / 8")
+- Use standard Python operators: +, -, *, /, **, %, //
+- Use parentheses for grouping: ()
+- Do not include any explanatory text
+- If no clear mathematical expression exists, return "NONE"
+
+Mathematical expression:"""
+        
+        response = llm.invoke([HumanMessage(content=extraction_prompt)])
+        expression = response.content.strip()
+        
+        # Clean up the response
+        if "NONE" in expression.upper() or not expression:
+            return None
+            
+        # Remove any quotes or extra formatting
+        expression = expression.strip('"\'`')
+        
+        # Basic validation - check if it looks like a math expression
+        if any(op in expression for op in ['+', '-', '*', '/', '(', ')']):
+            return expression
+            
+    except Exception as e:
+        print(f"⚠️  Warning: Failed to extract expression with LLM: {e}")
+    
+    return None
+
+def safe_eval_expression(expression):
+    """Safely evaluate mathematical expression using Python's eval.
+    
+    Args:
+        expression: Mathematical expression string
+        
+    Returns:
+        float or None: The calculated result, or None if evaluation failed
+    """
+    if not expression:
+        return None
+    
+    try:
+        # Define safe operators
+        safe_ops = {
+            ast.Add: operator.add,
+            ast.Sub: operator.sub,
+            ast.Mult: operator.mul,
+            ast.Div: operator.truediv,
+            ast.Pow: operator.pow,
+            ast.Mod: operator.mod,
+            ast.FloorDiv: operator.floordiv,
+            ast.USub: operator.neg,
+            ast.UAdd: operator.pos,
+        }
+        
+        def safe_eval_node(node):
+            if isinstance(node, ast.Constant):  # Numbers (Python 3.8+)
+                return node.value
+            elif hasattr(ast, 'Num') and isinstance(node, ast.Num):  # Python < 3.8 compatibility
+                return node.n
+            elif isinstance(node, ast.BinOp):  # Binary operations
+                left = safe_eval_node(node.left)
+                right = safe_eval_node(node.right)
+                op = safe_ops.get(type(node.op))
+                if op:
+                    return op(left, right)
+                else:
+                    raise ValueError(f"Unsupported operation: {type(node.op)}")
+            elif isinstance(node, ast.UnaryOp):  # Unary operations
+                operand = safe_eval_node(node.operand)
+                op = safe_ops.get(type(node.op))
+                if op:
+                    return op(operand)
+                else:
+                    raise ValueError(f"Unsupported unary operation: {type(node.op)}")
+            else:
+                raise ValueError(f"Unsupported node type: {type(node)}")
+        
+        # Parse and evaluate
+        tree = ast.parse(expression, mode='eval')
+        result = safe_eval_node(tree.body)
+        return float(result)
+        
+    except Exception as e:
+        print(f"⚠️  Warning: Failed to evaluate expression '{expression}': {e}")
+        return None
 
 def print_tool_execution_details(chunk, tool_tracker=None):
     """Print detailed information about tool execution"""
@@ -152,6 +256,15 @@ def run_calculation(agent, query, repeat=1):
     if repeat < 1:
         repeat = 1
     
+    # Extract expression and calculate ground truth for validation
+    extracted_expression = extract_expression_with_llm(query)
+    ground_truth = safe_eval_expression(extracted_expression) if extracted_expression else None
+    
+    if extracted_expression and ground_truth is not None:
+        print(f"📐 Extracted expression: {extracted_expression}")
+        print(f"🧮 Python eval result: {ground_truth}")
+        print()
+    
     results = []
     numerical_results = []
     execution_times = []
@@ -207,7 +320,8 @@ def run_calculation(agent, query, repeat=1):
             'result': result,
             'successful_calculation': successful_calculation,
             'final_answer': final_answer,
-            'execution_time': execution_time
+            'execution_time': execution_time,
+            'tools_used': len(tool_tracker['results']) > 0
         })
         
         # Print final result summary for single runs
@@ -237,13 +351,34 @@ def run_calculation(agent, query, repeat=1):
     if repeat == 1:
         # Single run - display as before
         result_info = results[0]
-        if result_info['successful_calculation'] and result_info['final_answer']:
-            print(f"\n🎯 FINAL ANSWER: {result_info['final_answer']}")
-            print(f"✅ Calculation completed successfully!")
-        elif result_info['final_answer']:
+        if result_info['final_answer']:
             print(f"\n🤖 FINAL RESPONSE: {result_info['final_answer']}")
+            
+            # Check if tools were actually used
+            tools_were_used = result_info['tools_used']
+            agent_result = numerical_results[0] if numerical_results[0] is not None else None
+            
+            if tools_were_used:
+                # Tools were used - validate normally
+                if ground_truth is not None and agent_result is not None:
+                    if abs(agent_result - ground_truth) < 1e-10:
+                        print(f"🔍 VALIDATION: ✅ correct")
+                    else:
+                        print(f"🔍 VALIDATION: ❌ wrong (Agent: {agent_result}, Python: {ground_truth})")
+                elif ground_truth is not None:
+                    print(f"🔍 VALIDATION: ⚠️ unable to extract agent result")
+                elif agent_result is not None:
+                    print(f"🔍 VALIDATION: ⚠️ unable to extract expression")
+                else:
+                    print(f"🔍 VALIDATION: ⚠️ unable to validate")
+            else:
+                # No tools were used
+                print(f"🔍 VALIDATION: ⚠️ no tools used")
+            
+            print(f"✅ Calculation completed successfully!")
         else:
             print(f"\n❌ No valid result obtained")
+            print(f"🔍 VALIDATION: ❌ failed")
         
         print(f"\n⏱️  Execution time: {result_info['execution_time']:.2f} seconds")
     else:
@@ -256,14 +391,44 @@ def run_calculation(agent, query, repeat=1):
         valid_results = [r for r in numerical_results if r is not None]
         if len(valid_results) > 0:
             all_same = all(abs(r - valid_results[0]) < 1e-10 for r in valid_results)
-            if all_same:
-                print(f"✅ VALIDATION PASSED: All {len(valid_results)} results are consistent")
-                print(f"🎯 Consistent result: {valid_results[0]}")
+            agent_result = valid_results[0] if valid_results else None
+            
+            # Compare with ground truth if available
+            if ground_truth is not None and agent_result is not None:
+                ground_truth_match = abs(agent_result - ground_truth) < 1e-10
+                
+                # Also check LLM final answers across runs
+                llm_results = []
+                for result_info in results:
+                    if result_info['final_answer']:
+                        llm_result = extract_numerical_result(result_info['final_answer'])
+                        if llm_result is not None:
+                            llm_results.append(llm_result)
+                
+                llm_consistent = len(llm_results) > 0 and all(abs(r - llm_results[0]) < 1e-10 for r in llm_results)
+                llm_matches_ground_truth = len(llm_results) > 0 and abs(llm_results[0] - ground_truth) < 1e-10
+                
+                if all_same and ground_truth_match:
+                    print(f"🔍 VALIDATION: ✅ correct (all {repeat} runs consistent)")
+                else:
+                    print(f"🔍 VALIDATION: ❌ wrong (Agent: {agent_result}, Python: {ground_truth})")
+                    if not all_same:
+                        print(f"   • Inconsistent results: {valid_results}")
+                    if not ground_truth_match:
+                        print(f"   • Wrong answer: difference of {abs(agent_result - ground_truth)}")
             else:
-                print(f"❌ VALIDATION FAILED: Results are inconsistent")
-                print(f"📊 Results: {valid_results}")
+                if all_same:
+                    print(f"✅ VALIDATION PASSED: All {len(valid_results)} results are consistent")
+                    print(f"🎯 Consistent result: {valid_results[0]}")
+                else:
+                    print(f"❌ VALIDATION FAILED: Results are inconsistent")
+                    print(f"📊 Results: {valid_results}")
         else:
-            print(f"⚠️  VALIDATION INCONCLUSIVE: No numerical results extracted")
+            if ground_truth is not None:
+                print(f"⚠️  VALIDATION INCONCLUSIVE: No agent results extracted")
+                print(f"🧮 Python eval: {ground_truth}")
+            else:
+                print(f"⚠️  VALIDATION INCONCLUSIVE: No numerical results extracted")
         
         # Show execution time statistics
         avg_time = sum(execution_times) / len(execution_times)
